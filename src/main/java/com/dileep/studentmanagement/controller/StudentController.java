@@ -1,18 +1,13 @@
 package com.dileep.studentmanagement.controller;
-
-import com.dileep.studentmanagement.entity.Student;
 import com.dileep.studentmanagement.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import com.dileep.studentmanagement.dto.StudentRequest;
-import com.dileep.studentmanagement.dto.StudentResponse;
 import com.dileep.studentmanagement.dto.StudentResponse;
 import com.dileep.studentmanagement.dto.StudentRequest;
-import com.dileep.studentmanagement.dto.StudentResponse;
-import org.springframework.data.domain.Page;
 import java.util.List;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import com.dileep.studentmanagement.dto.PageResponse;
 
 
 @RestController
@@ -23,9 +18,8 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
-
     @GetMapping
-    public Page<StudentResponse> getAllStudents(
+    public PageResponse<StudentResponse> getAllStudents(
 
             @RequestParam(defaultValue = "0") int page,
 

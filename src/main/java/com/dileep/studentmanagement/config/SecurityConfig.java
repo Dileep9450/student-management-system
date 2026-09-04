@@ -7,14 +7,23 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.dileep.studentmanagement.repository.UserRepository;
+import org.springframework.context.annotation.Bean;
 
 @Configuration
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            UserRepository userRepository
+    ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -75,5 +84,17 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByUsername(username)
+                .map(user -> org.springframework.security.core.userdetails.User
+                        .withUsername(user.getUsername())
+                        .password(user.getPassword())
+                        .roles(user.getRole())
+                        .build())
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found: " + username)
+                );
     }
 }

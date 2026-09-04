@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dileep.studentmanagement.dto.PageResponse;
 
 @Service
 public class StudentService {
@@ -24,7 +25,7 @@ public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
-    public Page<StudentResponse> getAllStudents(
+    public PageResponse<StudentResponse> getAllStudents(
             int page,
             int size,
             String sortBy,
@@ -38,7 +39,19 @@ public class StudentService {
 
         Page<Student> studentPage = studentRepository.findAll(pageable);
 
-        return studentPage.map(this::convertToResponse);
+        List<StudentResponse> content = studentPage.getContent()
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+
+        return new PageResponse<>(
+                content,
+                studentPage.getNumber(),
+                studentPage.getSize(),
+                studentPage.getTotalElements(),
+                studentPage.getTotalPages(),
+                studentPage.isLast()
+        );
     }
 
 
